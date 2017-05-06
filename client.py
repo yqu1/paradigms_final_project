@@ -109,6 +109,7 @@ class GameSpace:
             self.enemy_list.draw(self.screen)
             self.bullet_list.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
+            print "player displayed"
             self.screen.blit(self.teammate.image, self.teammate.rect)
             drawText('Score: %s' % (self.totalScore), self.scoreFont, self.screen, 0, 0)
             drawText('HP: %s' % (self.player.hp), self.scoreFont, self.screen, 0, 460)
@@ -159,7 +160,7 @@ class GameSpace:
         return event_list
 
     def sendState(self, state):
-        print(s)
+        #print(s)
         s = pickle.dumps(state)
         self.cf.conn.send(s)
 
@@ -176,7 +177,7 @@ class GameSpace:
 
     def addData(self, data):
         self.teammate_state = pickle.loads(data)
-        print(self.teammate_state)
+        #print(self.teammate_state)
         try:
             pos = self.teammate_state['pos']
             events = self.teammate_state['events']
