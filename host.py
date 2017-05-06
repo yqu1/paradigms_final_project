@@ -53,6 +53,7 @@ class GameSpace:
         reactor.run()
 
     def start(self):
+        print("fuck")
         self.player = Player(self, 1)
         self.player.rect.x = 400
         self.player.rect.y = 400
