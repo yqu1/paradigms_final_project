@@ -4,15 +4,15 @@ from pygame.locals import *
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, gs, speed, hp):
         
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         self.gs = gs
 
         if hp > 1:
-            self.orig_image = pygame.image.load("/home/remote/mwilli37/project/paradigms_final_project/assets/enemy1.png")
+            self.orig_image = pygame.image.load("assets/enemy1.png")
             scale = 0.20
         else:
-            self.orig_image = pygame.image.load("/home/remote/mwilli37/project/paradigms_final_project/assets/enemy2.png")
+            self.orig_image = pygame.image.load("assets/enemy2.png")
             scale = 0.10
             
         img_w,img_h = self.orig_image.get_size()
