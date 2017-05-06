@@ -40,6 +40,7 @@ def drawText(text, font, surface, x, y):
 
 class GameSpace:
     def __init__(self):
+       
         pygame.init()
         self.width = 1000
         self.height = 500
@@ -53,6 +54,7 @@ class GameSpace:
         reactor.run()
 
     def start(self):
+        
         self.player = Player(self, 1)
         self.player.rect.x = 400
         self.player.rect.y = 400

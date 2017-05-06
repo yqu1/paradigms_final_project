@@ -15,7 +15,7 @@ import pickle
 from game_objects import *
 
 CLIENT_PORT = 40051
-HOST = 'localhost'
+HOST = 'ash.campus.nd.edu'
 
 def end():
     pygame.quit()
@@ -50,7 +50,7 @@ class GameSpace:
         self.running = True
 
         self.cf = ClientConnFactory(self)   
-        reactor.listenTCP(CLIENT_PORT, self.cf)
+        reactor.connectTCP(HOST, CLIENT_PORT, self.cf)
         reactor.run()
 
     def start(self):
