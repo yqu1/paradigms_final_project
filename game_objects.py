@@ -89,7 +89,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.fire = False
         self.gs = gs
-        self.hp = 1000
+        self.hp = 1
 
     def update(self):
         for enemy in self.gs.enemy_list:

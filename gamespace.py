@@ -106,7 +106,7 @@ class GameSpace:
                 self.player.update()
                 self.bullet_list.update()
                 #self.bullet_list.update()
-                if self.player.hp == 0:
+                if self.player.hp <= 0:
                     break;
 
                 # Display current state of game objects
@@ -119,6 +119,7 @@ class GameSpace:
                 pygame.display.flip()
                 self.clock.tick(40)
 
+            drawText('Total Score: %s' % (self.totalScore), scoreFont, screen, (self.width / 3), (self.height / 3) + 100)
             drawText('GAME OVER', font, screen, (self.width / 3), (self.height / 3))
             drawText('Press enter to play again or esc to quit...', font, screen, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
@@ -132,6 +133,7 @@ class GameSpace:
             self.enemy_list = pygame.sprite.Group()
             self.add_enemy_rate = 30
             self.enemy_count = 0
+            self.totalScore = 0
 
 
 
