@@ -40,7 +40,6 @@ def drawText(text, font, surface, x, y):
 
 class GameSpace:
     def __init__(self):
-       
         pygame.init()
         self.width = 1000
         self.height = 500
@@ -54,7 +53,6 @@ class GameSpace:
         reactor.run()
 
     def start(self):
-        
         self.player = Player(self, 1)
         self.player.rect.x = 400
         self.player.rect.y = 400
@@ -66,6 +64,7 @@ class GameSpace:
         self.bullet_list = pygame.sprite.Group()
         
         self.enemy_list = pygame.sprite.Group()
+        self.enemy_state_list = []
         self.add_enemy_rate = 6
         self.enemy_count = 0
         self.bullet_count = 0
@@ -93,6 +92,7 @@ class GameSpace:
         state['events'] = self.packageEvents(events)
         state['keys_down'] = keys_down
         state['pos'] = (self.player.rect.x, self.player.rect.y)
+        state['enemy'] = self.enemy_state_list
         self.sendState(state)
         self.handleEvents(self.player, events, keys_down)
 
@@ -106,6 +106,12 @@ class GameSpace:
                 enemy.rect.x = random.randrange(self.width)
                 enemy.rect.y = 0
                 self.enemy_list.add(enemy)
+                enemy_state = {}
+                enemy_state['hp'] = hp
+                enemy_state['speed'] = speed
+                enemy_state['pos'] = (enemy.rect.x, enemy.rect.y)
+                self.enemy_state_list.append(enemy_state)
+
 
 
             self.player.update()
@@ -120,6 +126,7 @@ class GameSpace:
             self.enemy_list.draw(self.screen)
             self.bullet_list.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
+            self.screen.blit(self.teammate.image, self.teammate.rect)
             drawText('Score: %s' % (self.totalScore), scoreFont, self.screen2, 0, 0)
             drawText('HP: %s' % (self.player.hp), scoreFont, self.screen2, 0, 460)
             pygame.display.flip()

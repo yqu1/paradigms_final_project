@@ -72,7 +72,7 @@ class GameSpace:
         self.totalScore = 0
         self.scoreFont=pygame.font.SysFont("arial,tahoma", 20, True, True)
 
-        self.screen2 = pygame.display.set_mode([self.width,self.height])
+        # self.screen = pygame.display.set_mode([self.width,self.height])
         # pygame.display.set_caption('Raiden Simulation Game Engine')
 
         # # game resources setup
@@ -109,14 +109,14 @@ class GameSpace:
             self.enemy_list.draw(self.screen)
             self.bullet_list.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
-            drawText('Score: %s' % (self.totalScore), scoreFont, self.screen2, 0, 0)
-            drawText('HP: %s' % (self.player.hp), scoreFont, self.screen2, 0, 460)
+            drawText('Score: %s' % (self.totalScore), scoreFont, self.screen, 0, 0)
+            drawText('HP: %s' % (self.player.hp), scoreFont, self.screen, 0, 460)
             pygame.display.flip()
 
         else:
-            drawText('Total Score: %s' % (self.totalScore), scoreFont, self.screen2, (self.width / 3), (self.height / 3) + 100)
-            drawText('GAME OVER', font, self.screen2, (self.width / 3), (self.height / 3))
-            drawText('Press esc to quit...', font, self.screen2, (self.width / 3) - 80, (self.height / 3) + 50)
+            drawText('Total Score: %s' % (self.totalScore), scoreFont, self.screen, (self.width / 3), (self.height / 3) + 100)
+            drawText('GAME OVER', font, self.screen, (self.width / 3), (self.height / 3))
+            drawText('Press esc to quit...', font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
 
     def handleEvents(self, player, events, keys_down):
