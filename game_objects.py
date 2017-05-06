@@ -6,7 +6,7 @@ import pygame
 from pygame.locals import *
 
 class Bullet(pygame.sprite.Sprite):   
-    def __init__(self, gs, x, y):
+    def __init__(self, gs, x, y, player):
         pygame.sprite.Sprite.__init__(self) 
         self.bulletSpeed = 5
         self.image = pygame.Surface([2, 2])
@@ -14,7 +14,8 @@ class Bullet(pygame.sprite.Sprite):
         self.gs = gs
         self.rect = self.image.get_rect()    
         self.rect.x = x
-        self.rect.y = y    
+        self.rect.y = y  
+        self.player = player
     def update(self):
         self.rect.y -= self.bulletSpeed
         screen_w, screen_h = self.gs.screen.get_size()
@@ -78,7 +79,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, gs):
+    def __init__(self, gs, player):
         pygame.sprite.Sprite.__init__(self)
         image=pygame.image.load('assets/hero1.png')
         imageRect=image.get_rect()
@@ -90,6 +91,7 @@ class Player(pygame.sprite.Sprite):
         self.fire = False
         self.gs = gs
         self.hp = 1
+        self.player = player
 
     def update(self):
         for enemy in self.gs.enemy_list:
@@ -98,7 +100,7 @@ class Player(pygame.sprite.Sprite):
                 self.gs.enemy_list.remove(enemy)
 
         if self.fire:
-            bullet = Bullet(self.gs, self.rect.x + 36, self.rect.y)
+            bullet = Bullet(self.gs, self.rect.x + 36, self.rect.y, self.player)
             self.gs.bullet_list.add(bullet)
 
     def move(self, key):

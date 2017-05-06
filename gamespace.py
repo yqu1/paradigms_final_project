@@ -45,7 +45,7 @@ class GameSpace:
         self.bullet_list = pygame.sprite.Group()
         
         self.enemy_list = pygame.sprite.Group()
-        self.add_enemy_rate = 30
+        self.add_enemy_rate = 6
         self.enemy_count = 0
         self.bullet_count = 0
         self.add_bullet_rate = 20
@@ -117,7 +117,7 @@ class GameSpace:
                 drawText('Score: %s' % (self.totalScore), scoreFont, screen, 0, 0)
                 drawText('HP: %s' % (self.player.hp), scoreFont, screen, 0, 460)
                 pygame.display.flip()
-                self.clock.tick(40)
+                self.clock.tick(60)
 
             drawText('Total Score: %s' % (self.totalScore), scoreFont, screen, (self.width / 3), (self.height / 3) + 100)
             drawText('GAME OVER', font, screen, (self.width / 3), (self.height / 3))
