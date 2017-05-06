@@ -90,13 +90,14 @@ class GameSpace:
         state = {}
         events = pygame.event.get()
         keys_down = pygame.key.get_pressed()
+        print(keys_down)
         state['events'] = self.packageEvents(events)
         state['keys_down'] = keys_down
         state['pos'] = (self.player.rect.x, self.player.rect.y)
         state['enemy'] = self.enemy_state_list
         self.sendState(state)
         self.handleEvents(self.player, events, keys_down)
-
+        print("sent")
         if self.running == True:
             self.enemy_count +=1
             if self.enemy_count == self.add_enemy_rate:
@@ -122,18 +123,17 @@ class GameSpace:
 
             if self.player.hp <= 0 or self.teammate.hp <= 0:
                 self.running = False
-
             self.screen.fill(self.black)
             self.enemy_list.draw(self.screen)
             self.bullet_list.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
             self.screen.blit(self.teammate.image, self.teammate.rect)
-            drawText('Score: %s' % (self.totalScore), scoreFont, self.screen2, 0, 0)
-            drawText('HP: %s' % (self.player.hp), scoreFont, self.screen2, 0, 460)
+            drawText('Score: %s' % (self.totalScore), self.scoreFont, self.screen2, 0, 0)
+            drawText('HP: %s' % (self.player.hp), self.scoreFont, self.screen2, 0, 460)
+            print("asd")
             pygame.display.flip()
-
         else:
-            drawText('Total Score: %s' % (self.totalScore), scoreFont, self.screen2, (self.width / 3), (self.height / 3) + 100)
+            drawText('Total Score: %s' % (self.totalScore), self.scoreFont, self.screen2, (self.width / 3), (self.height / 3) + 100)
             drawText('GAME OVER', font, self.screen2, (self.width / 3), (self.height / 3))
             drawText('Press esc to quit...', font, self.screen2, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
