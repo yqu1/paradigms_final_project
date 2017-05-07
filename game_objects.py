@@ -42,6 +42,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.speed = speed
         self.hp = hp
+        self.killer = None
 
     def update(self):
 
@@ -57,11 +58,13 @@ class Enemy(pygame.sprite.Sprite):
             if pygame.sprite.collide_circle(self, bullet):
                 self.hp -= 2
                 self.gs.bullet_list.remove(bullet)
+                self.killer = bullet.player
 
 
         if self.hp <= 0:
             self.gs.enemy_list.remove(self)
             self.gs.totalScore += 1
+            self.killer.score +=1
             
         '''    
         # Check to see if enemy has been hit
@@ -92,6 +95,7 @@ class Player(pygame.sprite.Sprite):
         self.gs = gs
         self.hp = 1
         self.player = player
+        self.score = 0
 
     def update(self):
         for enemy in self.gs.enemy_list:

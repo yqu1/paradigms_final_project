@@ -117,6 +117,8 @@ class GameSpace:
 
         else:
             drawText('Total Score: %s' % (self.totalScore), self.scoreFont, self.screen, (self.width / 3), (self.height / 3) + 100)
+            drawText('Your Score: %s' % (self.totalScore), self.scoreFont, self.screen, (self.width / 3) - 50, (self.height / 3) + 50)
+            drawText('Teammate Score: %s' % (self.totalScore), self.scoreFont, self.screen, (self.width / 3) + 50, (self.height / 3) + 50)
             drawText('GAME OVER', self.font, self.screen, (self.width / 3), (self.height / 3))
             drawText('Press esc to quit...', self.font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
