@@ -48,6 +48,7 @@ class GameSpace:
         self.screen = pygame.display.set_mode(self.size)
         self.background = pygame.Surface(self.screen.get_size())
         self.running = True
+        self.time = 0
 
         self.cf = ClientConnFactory(self)   
         reactor.connectTCP(HOST, CLIENT_PORT, self.cf)
@@ -61,6 +62,9 @@ class GameSpace:
         self.teammate = Player(self)
         self.teammate.rect.x = 400
         self.teammate.rect.y = 400
+
+        self.boss = Boss(self)
+        
         self.bullet_list = pygame.sprite.Group()
         
         self.enemy_list = pygame.sprite.Group()
@@ -84,6 +88,8 @@ class GameSpace:
         # waitForPlayerToPressKey()
 
     def tick(self):
+        self.time += 1
+        
         state = {}
         events = pygame.event.get()
         keys_down = pygame.key.get_pressed()
@@ -101,12 +107,17 @@ class GameSpace:
             self.teammate.update()
             self.enemy_list.update()
             self.bullet_list.update()
+            self.boss.update()
 
             if self.player.hp <= 0 or self.teammate.hp <= 0:
                 self.running = False
 
             self.screen.fill(self.black)
-            self.enemy_list.draw(self.screen)
+            if self.time <= 10:
+                self.enemy_list.draw(self.screen)
+            else:
+                self.screen.blit(self.boss.image, self.boss.rect)
+                
             self.bullet_list.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
             print "player displayed"

@@ -48,6 +48,7 @@ class GameSpace:
         self.screen = pygame.display.set_mode(self.size)
         self.background = pygame.Surface(self.screen.get_size())
         self.running = True
+        self.time = 0
         self.cf = ServerConnFactory(self)   
         reactor.listenTCP(CLIENT_PORT, self.cf)
         reactor.run()
@@ -60,6 +61,9 @@ class GameSpace:
         self.teammate = Player(self)
         self.teammate.rect.x = 500
         self.teammate.rect.y = 400
+
+        self.boss = Boss(self)
+        
         self.bullet_list = pygame.sprite.Group()
         self.curEnemy = {}
         self.enemy_list = pygame.sprite.Group()
@@ -84,6 +88,8 @@ class GameSpace:
         # waitForPlayerToPressKey()
 
     def tick(self):
+        self.time += 1
+        
         state = {}
         events = pygame.event.get()
         keys_down = pygame.key.get_pressed()
@@ -99,37 +105,44 @@ class GameSpace:
         self.sendState(state)
         self.handleEvents(self.player, events, keys_down)
         if self.running == True:
-            self.enemy_count +=1
-            if self.enemy_count == self.add_enemy_rate:
-                speed = random.randrange(1, 5)
-                hp = random.randrange(1, 3)
-                enemy = Enemy(self, speed, hp)
-                enemy.rect.x = random.randrange(self.width)
-                enemy.rect.y = 0
-                self.enemy_list.add(enemy)
-                enemy_state = {}
-                enemy_state['hp'] = hp
-                enemy_state['speed'] = speed
-                enemy_state['pos'] = (enemy.rect.x, enemy.rect.y)
-                self.curEnemy = enemy_state
-                #events = pygame.event.get()
-                #keys_down = pygame.key.get_pressed()
-                #state['events'] = self.packageEvents(events)
-                #state['keys_down'] = keys_down
-                #state['pos'] = (self.player.rect.x, self.player.rect.y)
-                #state['enemy'] = self.curEnemy
-                #self.sendState(state)
+            if self.time <= 10:
+                self.enemy_count +=1
+                if self.enemy_count == self.add_enemy_rate:
+                    speed = random.randrange(1, 5)
+                    hp = random.randrange(1, 3)
+                    enemy = Enemy(self, speed, hp)
+                    enemy.rect.x = random.randrange(self.width)
+                    enemy.rect.y = 0
+                    self.enemy_list.add(enemy)
+                    enemy_state = {}
+                    enemy_state['hp'] = hp
+                    enemy_state['speed'] = speed
+                    enemy_state['pos'] = (enemy.rect.x, enemy.rect.y)
+                    self.curEnemy = enemy_state
+                    #events = pygame.event.get()
+                    #keys_down = pygame.key.get_pressed()
+                    #state['events'] = self.packageEvents(events)
+                    #state['keys_down'] = keys_down
+                    #state['pos'] = (self.player.rect.x, self.player.rect.y)
+                    #state['enemy'] = self.curEnemy
+                    #self.sendState(state)
+            else:
+                self.enemy_list.clear()
 
 
             self.player.update()
             self.teammate.update()
             self.enemy_list.update()
             self.bullet_list.update()
+            self.boss.update()
 
             if self.player.hp <= 0 or self.teammate.hp <= 0:
                 self.running = False
             self.screen.fill(self.black)
-            self.enemy_list.draw(self.screen)
+            if self.time <= 10:
+                self.enemy_list.draw(self.screen)
+            else:
+                self.screen.blit(self.boss.image, self.boss.rect)
             self.bullet_list.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
             self.screen.blit(self.teammate.image, self.teammate.rect)

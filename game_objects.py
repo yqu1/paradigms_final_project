@@ -121,3 +121,44 @@ class Player(pygame.sprite.Sprite):
         elif key[K_w]:
             if self.rect.y != 0:
                 self.rect = self.rect.move(0, -5)
+
+class Boss(pygame.sprite.Sprite):
+    def __init__(self, gs):
+        pygame.sprite.Sprite.__init__(self)
+        self.orig_image = pygame.image.load('assets/tankBoss.png').convert()
+        self.image = self.orig_image
+        self.rect = self.image.get_rect()
+        self.gs = gs
+        self.hp = 20
+        self.rect.x = 50
+        self.rect.y = 100
+        self.direction = 0
+
+    def update(self):
+
+        # Move boss horizontally across screen
+
+        if self.rect.x >= 950:
+            self.direction = 1
+
+        if self.rect.x <= 50:
+            self.direction = 0
+
+        if self.direction == 0:
+            self.rect.x += 10
+        else:
+            self.rect.x -= 10
+
+        # Check to see whether or not boss get hit with bullet
+
+        for bullet in self.gs.bullet_list:
+            if pygame.sprite.collide_circle(self, bullet):
+                self.hp -= 2
+                self.gs.bullet_list.remove(bullet)
+                self.killer = bullet.player
+
+        # Remove boss from game if hit points has reached 0
+                
+        if self.hp <= 0:
+            self.gs.enemy_list.remove(self)
+            self.killer.score += 5
