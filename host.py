@@ -53,14 +53,13 @@ class GameSpace:
         reactor.run()
 
     def start(self):
-        self.player = Player(self, 1)
+        self.player = Player(self)
         self.player.rect.x = 400
         self.player.rect.y = 400
 
-        self.teammate = Player(self, 2)
+        self.teammate = Player(self)
         self.teammate.rect.x = 500
         self.teammate.rect.y = 400
-
         self.bullet_list = pygame.sprite.Group()
         self.curEnemy = {}
         self.enemy_list = pygame.sprite.Group()
@@ -69,7 +68,6 @@ class GameSpace:
         self.enemy_count = 0
         self.bullet_count = 0
         self.add_bullet_rate = 20
-        self.totalScore = 0
         self.scoreFont=pygame.font.SysFont("arial,tahoma", 20, True, True)
 
         self.screen2 = pygame.display.set_mode([self.width,self.height])
@@ -92,6 +90,8 @@ class GameSpace:
         state['events'] = self.packageEvents(events)
         state['keys_down'] = keys_down
         state['pos'] = (self.player.rect.x, self.player.rect.y)
+        state['hp'] = self.player.hp
+        state['score'] = self.player.score
         if self.enemy_count == self.add_enemy_rate:
             self.enemy_count = 0
             print(self.curEnemy)
@@ -133,16 +133,16 @@ class GameSpace:
             self.bullet_list.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
             self.screen.blit(self.teammate.image, self.teammate.rect)
-            drawText('Score: %s' % (self.totalScore), self.scoreFont, self.screen, 0, 0)
+            drawText('Score: %s' % (self.player.score), self.scoreFont, self.screen, 0, 0)
             drawText('HP: %s' % (self.player.hp), self.scoreFont, self.screen, 0, 460)
             pygame.display.flip()
         else:
-            drawText('Total Score: %s' % (self.totalScore), self.scoreFont, self.screen, (self.width / 3), (self.height / 3) + 100)
-            drawText('Your Score: %s' % (self.player.score), self.scoreFont, self.screen, (self.width / 3) - 50, (self.height / 3) + 50)
-            drawText('Teammate Score: %s' % (self.teammate.score), self.scoreFont, self.screen, (self.width / 3) + 50, (self.height / 3) + 50)
+            drawText('Your Score: %s' % (self.player.score), self.scoreFont, self.screen, (self.width / 3) - 100, (self.height / 3) + 150)
+            drawText('Teammate Score: %s' % (self.teammate.score), self.scoreFont, self.screen, (self.width / 3) + 100, (self.height / 3) + 150)
             drawText('GAME OVER', self.font, self.screen, (self.width / 3), (self.height / 3))
             drawText('Press esc to quit...', self.font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
+
 
     def handleEvents(self, player, events, keys_down):
         for event in events:
@@ -203,6 +203,9 @@ class GameSpace:
             pos = self.teammate_state['pos']
             events = self.teammate_state['events']
             keys_down = self.teammate_state['keys_down']
+            self.teammate.score = self.teammate_state['score']
+            self.teammate.hp = self.teammate_state['hp']
+            print(self.teammate.hp)
             self.teammate.rect.x = pos[0]
             self.teammate.rect.y = pos[1]
             self.handleRemoteEvents(self.teammate, events, keys_down)

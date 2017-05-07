@@ -63,7 +63,6 @@ class Enemy(pygame.sprite.Sprite):
 
         if self.hp <= 0:
             self.gs.enemy_list.remove(self)
-            self.gs.totalScore += 1
             self.killer.score +=1
             
         '''    
@@ -82,7 +81,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, gs, player):
+    def __init__(self, gs):
         pygame.sprite.Sprite.__init__(self)
         image=pygame.image.load('assets/hero1.png')
         imageRect=image.get_rect()
@@ -94,7 +93,6 @@ class Player(pygame.sprite.Sprite):
         self.fire = False
         self.gs = gs
         self.hp = 1
-        self.player = player
         self.score = 0
 
     def update(self):
@@ -104,7 +102,7 @@ class Player(pygame.sprite.Sprite):
                 self.gs.enemy_list.remove(enemy)
 
         if self.fire:
-            bullet = Bullet(self.gs, self.rect.x + 36, self.rect.y, self.player)
+            bullet = Bullet(self.gs, self.rect.x + 36, self.rect.y, self)
             self.gs.bullet_list.add(bullet)
 
     def move(self, key):
