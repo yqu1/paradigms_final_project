@@ -184,18 +184,18 @@ class GameSpace:
             pos = self.teammate_state['pos']
             events = self.teammate_state['events']
             keys_down = self.teammate_state['keys_down']
-            e = self.teammate_state['enemy']
             self.teammate.rect.x = pos[0]
             self.teammate.rect.y = pos[1]
             self.handleRemoteEvents(self.teammate, events, keys_down)
             
-            if e:
+            if 'enemy' in self.teammate_state:
+                e = self.teammate_state['enemy']
                 print(e)
                 enemy = Enemy(self, e['speed'], e['hp'])
                 enemy.rect.x = e['pos'][0]
                 enemy.rect.y = e['pos'][1]
                 self.enemy_list.add(enemy)
-
+                
         except Exception as ex:
             pass
 
