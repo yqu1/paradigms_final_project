@@ -59,11 +59,11 @@ class GameSpace:
         self.player.rect.y = 400
 
         self.teammate = Player(self, 2)
-        self.player.rect.x = 500
-        self.player.rect.y = 400
+        self.teammate.rect.x = 500
+        self.teammate.rect.y = 400
 
         self.bullet_list = pygame.sprite.Group()
-        
+        self.curEnemy = {}
         self.enemy_list = pygame.sprite.Group()
         self.enemy_state_list = []
         self.add_enemy_rate = 6
@@ -94,7 +94,7 @@ class GameSpace:
         state['events'] = self.packageEvents(events)
         state['keys_down'] = keys_down
         state['pos'] = (self.player.rect.x, self.player.rect.y)
-        state['enemy'] = self.enemy_state_list
+        state['enemy'] = self.curEnemy
         self.sendState(state)
         self.handleEvents(self.player, events, keys_down)
         print("sent")
@@ -112,8 +112,15 @@ class GameSpace:
                 enemy_state['hp'] = hp
                 enemy_state['speed'] = speed
                 enemy_state['pos'] = (enemy.rect.x, enemy.rect.y)
-                self.enemy_state_list.append(enemy_state)
-
+                self.curEnemy = enemy_state
+                #self.enemy_state_list.append(enemy_state)
+                #events = pygame.event.get()
+                #keys_down = pygame.key.get_pressed()
+                #state['events'] = self.packageEvents(events)
+                #state['keys_down'] = keys_down
+                #state['pos'] = (self.player.rect.x, self.player.rect.y)
+                #state['enemy'] = enemy_state
+                #self.sendState(state)
 
 
             self.player.update()
@@ -128,14 +135,14 @@ class GameSpace:
             self.bullet_list.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
             self.screen.blit(self.teammate.image, self.teammate.rect)
-            drawText('Score: %s' % (self.totalScore), self.scoreFont, self.screen2, 0, 0)
-            drawText('HP: %s' % (self.player.hp), self.scoreFont, self.screen2, 0, 460)
+            drawText('Score: %s' % (self.totalScore), self.scoreFont, self.screen, 0, 0)
+            drawText('HP: %s' % (self.player.hp), self.scoreFont, self.screen, 0, 460)
             print("asd")
             pygame.display.flip()
         else:
-            drawText('Total Score: %s' % (self.totalScore), self.scoreFont, self.screen2, (self.width / 3), (self.height / 3) + 100)
-            drawText('GAME OVER', font, self.screen2, (self.width / 3), (self.height / 3))
-            drawText('Press esc to quit...', font, self.screen2, (self.width / 3) - 80, (self.height / 3) + 50)
+            drawText('Total Score: %s' % (self.totalScore), self.scoreFont, self.screen, (self.width / 3), (self.height / 3) + 100)
+            drawText('GAME OVER', self.font, self.screen, (self.width / 3), (self.height / 3))
+            drawText('Press esc to quit...', self.font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
 
     def handleEvents(self, player, events, keys_down):

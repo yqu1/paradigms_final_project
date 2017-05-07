@@ -55,12 +55,12 @@ class GameSpace:
 
     def start(self):
         self.player = Player(self, 1)
-        self.player.rect.x = 400
+        self.player.rect.x = 500
         self.player.rect.y = 400
 
         self.teammate = Player(self, 2)
-        self.player.rect.x = 500
-        self.player.rect.y = 400
+        self.teammate.rect.x = 400
+        self.teammate.rect.y = 400
 
         self.bullet_list = pygame.sprite.Group()
         
@@ -116,9 +116,9 @@ class GameSpace:
             pygame.display.flip()
 
         else:
-            drawText('Total Score: %s' % (self.totalScore), scoreFont, self.screen, (self.width / 3), (self.height / 3) + 100)
-            drawText('GAME OVER', font, self.screen, (self.width / 3), (self.height / 3))
-            drawText('Press esc to quit...', font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
+            drawText('Total Score: %s' % (self.totalScore), self.scoreFont, self.screen, (self.width / 3), (self.height / 3) + 100)
+            drawText('GAME OVER', self.font, self.screen, (self.width / 3), (self.height / 3))
+            drawText('Press esc to quit...', self.font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
 
     def handleEvents(self, player, events, keys_down):
@@ -182,12 +182,13 @@ class GameSpace:
             pos = self.teammate_state['pos']
             events = self.teammate_state['events']
             keys_down = self.teammate_state['keys_down']
-            enemy_state_list = self.teammate_state['enemy']
+            e = self.teammate_state['enemy']
             self.teammate.rect.x = pos[0]
             self.teammate.rect.y = pos[1]
             self.handleRemoteEvents(self.teammate, events, keys_down)
             
-            for e in enemy_state_list:
+            if e:
+                print(e)
                 enemy = Enemy(self, e['speed'], e['hp'])
                 enemy.rect.x = e['pos'][0]
                 enemy.rect.y = e['pos'][1]
