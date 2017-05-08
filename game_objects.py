@@ -22,6 +22,22 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.y < 0:
             self.gs.bullet_list.remove(self)
 
+class BossBullet(pygame.sprite.Sprite):
+    def __init__(self, gs, x, y):
+        pygame.sprite.Sprite.__init__(self) 
+        self.bulletSpeed = 5
+        self.image = pygame.Surface([2, 2])
+        self.image.fill(( 255, 255, 255))
+        self.gs = gs
+        self.rect = self.image.get_rect()    
+        self.rect.x = x
+        self.rect.y = y  
+    def update(self):
+        self.rect.y += self.bulletSpeed
+        screen_w, screen_h = self.gs.screen.get_size()
+        if self.rect.y > 500:
+            self.gs.bullet_list.remove(self)
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, gs, speed, hp):
         
@@ -101,6 +117,11 @@ class Player(pygame.sprite.Sprite):
                 self.hp -= 100
                 self.gs.enemy_list.remove(enemy)
 
+        for bullet in self.gs.boss_bullets:
+            if pygame.sprite.collide_circle(self, bullet):
+                self.hp -=2
+                self.gs.boss_bullets.remove(bullet)
+
         if self.fire:
             bullet = Bullet(self.gs, self.rect.x + 36, self.rect.y, self)
             self.gs.bullet_list.add(bullet)
@@ -126,7 +147,9 @@ class Boss(pygame.sprite.Sprite):
     def __init__(self, gs):
         pygame.sprite.Sprite.__init__(self)
         self.orig_image = pygame.image.load('assets/tankBoss.png').convert()
-        self.image = self.orig_image
+        img_w, img_h = self.orig_image.get_size()
+        scale = 0.50
+        self.image = pygame.transform.scale(self.orig_image, (int(img_w*scale), int(img_h*scale))) 
         self.rect = self.image.get_rect()
         self.gs = gs
         self.hp = 20
@@ -148,6 +171,13 @@ class Boss(pygame.sprite.Sprite):
             self.rect.x += 10
         else:
             self.rect.x -= 10
+
+        # Shoot bullets periodically
+
+        prob = randrange(1, 5)
+        if prob == 1:
+            bullet = BossBullet(self.gs, self.boss.rect.centerx, self.boss.rect.y)
+            self.gs.boss_bullets.add(bullet)
 
         # Check to see whether or not boss get hit with bullet
 

@@ -66,6 +66,7 @@ class GameSpace:
         self.boss = Boss(self)
         
         self.bullet_list = pygame.sprite.Group()
+        self.boss_bullets = pygame.sprite.Group()
         
         self.enemy_list = pygame.sprite.Group()
         self.add_enemy_rate = 6
@@ -107,6 +108,7 @@ class GameSpace:
             self.teammate.update()
             self.enemy_list.update()
             self.bullet_list.update()
+            self.boss_bullets.update()
             self.boss.update()
 
             if self.player.hp <= 0 or self.teammate.hp <= 0:
@@ -119,8 +121,8 @@ class GameSpace:
                 self.screen.blit(self.boss.image, self.boss.rect)
                 
             self.bullet_list.draw(self.screen)
+            self.boss_bullets.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
-            print "player displayed"
             self.screen.blit(self.teammate.image, self.teammate.rect)
             drawText('Score: %s' % (self.player.score), self.scoreFont, self.screen, 0, 0)
             drawText('HP: %s' % (self.player.hp), self.scoreFont, self.screen, 0, 460)
