@@ -26,7 +26,7 @@ def drawText(text, font, surface, x, y):
     surface.blit(textobj, textrect)
 
 class GameSpace:
-    def __init__(self):
+    def main(self):
         pygame.init()
 
 
@@ -38,7 +38,7 @@ class GameSpace:
         self.screen = pygame.display.set_mode(self.size)
         self.background = pygame.Surface(self.screen.get_size())
 
-        self.player = Player(self)
+        self.player = Player(self, 1)
         self.player.rect.x = 500
         self.player.rect.y = 400
 
@@ -53,7 +53,7 @@ class GameSpace:
         scoreFont=pygame.font.SysFont("arial,tahoma", 20, True, True)
 
         # screen = pygame.display.set_mode([self.width,self.height])
-        # pygame.display.set_caption('Raiden Simulation Game Engine')
+        pygame.display.set_caption('Raiden Simulation Game Engine')
 
         # game resources setup
         font = pygame.font.SysFont(None, 48)
@@ -62,10 +62,10 @@ class GameSpace:
 
         self.clock = pygame.time.Clock()
 
-        # drawText('RAIDEN', font, self.screen, (self.width / 3), (self.height / 3))
-        # drawText('Press enter to start...', font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
-        # pygame.display.update()
-        # waitForPlayerToPressKey()
+        drawText('RAIDEN', font, self.screen, (self.width / 3), (self.height / 3))
+        drawText('Press enter to start...', font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
+        pygame.display.update()
+        waitForPlayerToPressKey()
 
         while True:
             while True:
@@ -114,12 +114,12 @@ class GameSpace:
                 self.enemy_list.draw(self.screen)
                 self.bullet_list.draw(self.screen)
                 self.screen.blit(self.player.image, self.player.rect)
-                drawText('Score: %s' % (self.player.score), scoreFont, self.screen, 0, 0)
+                drawText('Score: %s' % (self.totalScore), scoreFont, self.screen, 0, 0)
                 drawText('HP: %s' % (self.player.hp), scoreFont, self.screen, 0, 460)
                 pygame.display.flip()
                 self.clock.tick(60)
 
-            drawText('Total Score: %s' % (self.player.score), scoreFont, self.screen, (self.width / 3), (self.height / 3) + 100)
+            drawText('Total Score: %s' % (self.totalScore), scoreFont, self.screen, (self.width / 3), (self.height / 3) + 100)
             drawText('GAME OVER', font, self.screen, (self.width / 3), (self.height / 3))
             drawText('Press enter to play again or esc to quit...', font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
@@ -138,6 +138,6 @@ class GameSpace:
 
 
 
-# if __name__ == '__main__':
-#     gs = GameSpace()
-#     gs.main()
+if __name__ == '__main__':
+    gs = GameSpace()
+    gs.main()

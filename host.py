@@ -1,7 +1,7 @@
 import pygame
 import random, sys
 from pygame.locals import *
-
+from gameMenu import *
 from twisted.internet.protocol import ClientFactory
 from twisted.internet.protocol import Factory
 from twisted.internet.protocol import Protocol
@@ -9,6 +9,7 @@ from twisted.internet import reactor
 from twisted.internet.defer import DeferredQueue
 from twisted.internet.task import LoopingCall
 from connection import *
+from gamespace import *
 
 import pickle
 
@@ -16,6 +17,8 @@ from game_objects import *
 
 CLIENT_PORT = 40051
 HOST = 'localhost'
+
+
 
 def end():
     pygame.quit()
@@ -38,7 +41,7 @@ def drawText(text, font, surface, x, y):
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
-class GameSpace:
+class GameSpace_multi:
     def __init__(self):
         pygame.init()
         self.width = 1000
@@ -48,7 +51,6 @@ class GameSpace:
         self.screen = pygame.display.set_mode(self.size)
         self.background = pygame.Surface(self.screen.get_size())
         self.running = True
-        self.time = 0
         self.cf = ServerConnFactory(self)   
         reactor.listenTCP(CLIENT_PORT, self.cf)
         reactor.run()
@@ -61,12 +63,7 @@ class GameSpace:
         self.teammate = Player(self)
         self.teammate.rect.x = 500
         self.teammate.rect.y = 400
-
-        self.boss = Boss(self)
-        
         self.bullet_list = pygame.sprite.Group()
-        self.boss_bullets = pygame.sprite.Group()
-        
         self.curEnemy = {}
         self.enemy_list = pygame.sprite.Group()
         self.enemy_state_list = []
@@ -90,8 +87,6 @@ class GameSpace:
         # waitForPlayerToPressKey()
 
     def tick(self):
-        self.time += 1
-        
         state = {}
         events = pygame.event.get()
         keys_down = pygame.key.get_pressed()
@@ -102,52 +97,42 @@ class GameSpace:
         state['score'] = self.player.score
         if self.enemy_count == self.add_enemy_rate:
             self.enemy_count = 0
-            print(self.curEnemy)
             state['enemy'] = self.curEnemy
         self.sendState(state)
         self.handleEvents(self.player, events, keys_down)
         if self.running == True:
-            if self.time <= 10:
-                self.enemy_count +=1
-                if self.enemy_count == self.add_enemy_rate:
-                    speed = random.randrange(1, 5)
-                    hp = random.randrange(1, 3)
-                    enemy = Enemy(self, speed, hp)
-                    enemy.rect.x = random.randrange(self.width)
-                    enemy.rect.y = 0
-                    self.enemy_list.add(enemy)
-                    enemy_state = {}
-                    enemy_state['hp'] = hp
-                    enemy_state['speed'] = speed
-                    enemy_state['pos'] = (enemy.rect.x, enemy.rect.y)
-                    self.curEnemy = enemy_state
-                    #events = pygame.event.get()
-                    #keys_down = pygame.key.get_pressed()
-                    #state['events'] = self.packageEvents(events)
-                    #state['keys_down'] = keys_down
-                    #state['pos'] = (self.player.rect.x, self.player.rect.y)
-                    #state['enemy'] = self.curEnemy
-                    #self.sendState(state)
-            else:
-                self.enemy_list.clear()
+            self.enemy_count +=1
+            if self.enemy_count == self.add_enemy_rate:
+                speed = random.randrange(1, 5)
+                hp = random.randrange(1, 3)
+                enemy = Enemy(self, speed, hp)
+                enemy.rect.x = random.randrange(self.width)
+                enemy.rect.y = 0
+                self.enemy_list.add(enemy)
+                enemy_state = {}
+                enemy_state['hp'] = hp
+                enemy_state['speed'] = speed
+                enemy_state['pos'] = (enemy.rect.x, enemy.rect.y)
+                self.curEnemy = enemy_state
+                #events = pygame.event.get()
+                #keys_down = pygame.key.get_pressed()
+                #state['events'] = self.packageEvents(events)
+                #state['keys_down'] = keys_down
+                #state['pos'] = (self.player.rect.x, self.player.rect.y)
+                #state['enemy'] = self.curEnemy
+                #self.sendState(state)
 
 
             self.player.update()
             self.teammate.update()
             self.enemy_list.update()
             self.bullet_list.update()
-            self.boss_bullets.update()
-            self.boss.update()
 
             if self.player.hp <= 0 or self.teammate.hp <= 0:
                 self.running = False
             self.screen.fill(self.black)
-            if self.time <= 10:
-                self.enemy_list.draw(self.screen)
-            else:
-                self.screen.blit(self.boss.image, self.boss.rect)
+            self.enemy_list.draw(self.screen)
             self.bullet_list.draw(self.screen)
-            self.boss_bullets.draw(self.screen)
             self.screen.blit(self.player.image, self.player.rect)
             self.screen.blit(self.teammate.image, self.teammate.rect)
             drawText('Score: %s' % (self.player.score), self.scoreFont, self.screen, 0, 0)
@@ -222,7 +207,6 @@ class GameSpace:
             keys_down = self.teammate_state['keys_down']
             self.teammate.score = self.teammate_state['score']
             self.teammate.hp = self.teammate_state['hp']
-            print(self.teammate.hp)
             self.teammate.rect.x = pos[0]
             self.teammate.rect.y = pos[1]
             self.handleRemoteEvents(self.teammate, events, keys_down)
@@ -231,79 +215,16 @@ class GameSpace:
 
 
 
-    # def main(self):
-
-    #     while True:
-    #         while True:
-                
-    #             # Generate new enemies with random speed
-    #             self.enemy_count +=1
-    #             if self.enemy_count == self.add_enemy_rate:
-    #                 self.enemy_count = 0
-    #                 speed = random.randrange(1, 5)
-    #                 hp = random.randrange(1, 3)
-    #                 enemy = Enemy(self, speed, hp)
-    #                 enemy.rect.x = random.randrange(self.width)
-    #                 enemy.rect.y = 0
-    #                 self.enemy_list.add(enemy)
-
-    #             # Handle events
-    #             for event in pygame.event.get():
-    #                 if event.type == QUIT:
-    #                     sys.exit()
-    #                     # if event.key == pygame.K_ESCAPE:
-    #                     #     drawText('Paused', font, screen, (self.width / 3), (self.height / 3))
-    #                     #     drawText('Press enter to play again or esc to quit...', font, screen, (self.width / 3) - 80, (self.height / 3) + 50)
-    #                     #     pygame.display.update()
-    #                     #     waitForPlayerToPressKey()
-
-    #                 elif event.type == MOUSEBUTTONDOWN:
-    #                     self.player.fire = True
-    #                 elif event.type == MOUSEBUTTONUP:
-    #                     self.player.fire = False
-    #                 elif event.type == QUIT:
-    #                     pygame.display.quit()
-
-    #             keys_down = pygame.key.get_pressed()
-    #             self.player.move(keys_down)
-
-                    
-    #             # Update game objects    
-    #             self.enemy_list.update()
-    #             self.player.update()
-    #             self.bullet_list.update()
-    #             #self.bullet_list.update()
-    #             if self.player.hp <= 0:
-    #                 break;
-
-    #             # Display current state of game objects
-    #             self.screen.fill(self.black)
-    #             self.enemy_list.draw(self.screen)
-    #             self.bullet_list.draw(self.screen)
-    #             self.screen.blit(self.player.image, self.player.rect)
-    #             drawText('Score: %s' % (self.totalScore), scoreFont, screen, 0, 0)
-    #             drawText('HP: %s' % (self.player.hp), scoreFont, screen, 0, 460)
-    #             pygame.display.flip()
-    #             self.clock.tick(60)
-
-    #         drawText('Total Score: %s' % (self.totalScore), scoreFont, screen, (self.width / 3), (self.height / 3) + 100)
-    #         drawText('GAME OVER', font, screen, (self.width / 3), (self.height / 3))
-    #         drawText('Press enter to play again or esc to quit...', font, screen, (self.width / 3) - 80, (self.height / 3) + 50)
-    #         pygame.display.update()
-    #         waitForPlayerToPressKey()
-    #         self.player = Player(self)
-    #         self.player.rect.x = 500
-    #         self.player.rect.y = 400
-
-    #         self.bullet_list = pygame.sprite.Group()
-            
-    #         self.enemy_list = pygame.sprite.Group()
-    #         self.add_enemy_rate = 30
-    #         self.enemy_count = 0
-    #         self.totalScore = 0
-
-
 
 
 if __name__ == '__main__':
-    gs = GameSpace()
+    screen = pygame.display.set_mode((640, 480), 0, 32)
+    menu_items = ('Quit', 'Single Player','Multi Player')
+    funcs = {'Quit': sys.exit,
+             'Multi Player': GameSpace_multi,
+             'Single Player': GameSpace
+             }
+ 
+    pygame.display.set_caption('Space Wars')
+    gm = GameMenu(screen, funcs.keys(), funcs)
+    gm.run()
