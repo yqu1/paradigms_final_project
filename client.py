@@ -16,7 +16,10 @@ import pickle
 from game_objects import *
 
 # Client & Host information
+#change the client port when necessary
 CLIENT_PORT = 40051
+
+#change the host name when necessary
 HOST = 'localhost'
 
 # Function to end game
@@ -111,16 +114,18 @@ class GameSpace_multi:
             self.enemy_list.update()
             self.bullet_list.update()
 
-            # End game if either player has been killed
-            if self.player.hp <= 0 or self.teammate.hp <= 0:
+            # End game if both player has been killed
+            if self.player.hp <= 0 and self.teammate.hp <= 0:
                 self.running = False
 
             # Update display screen
             self.screen.fill(self.black)
             self.enemy_list.draw(self.screen)
             self.bullet_list.draw(self.screen)
-            self.screen.blit(self.player.image, self.player.rect)
-            self.screen.blit(self.teammate.image, self.teammate.rect)
+            if self.player.hp > 0:
+                self.screen.blit(self.player.image, self.player.rect)
+            if self.teammate.hp > 0:
+                self.screen.blit(self.teammate.image, self.teammate.rect)
             drawText('Score: %s' % (self.player.score), self.scoreFont, self.screen, 0, 0)
             drawText('HP: %s' % (self.player.hp), self.scoreFont, self.screen, 0, 460)
             pygame.display.flip()
@@ -133,6 +138,7 @@ class GameSpace_multi:
             drawText('GAME OVER', self.font, self.screen, (self.width / 3), (self.height / 3))
             drawText('Press esc to quit...', self.font, self.screen, (self.width / 3) - 80, (self.height / 3) + 50)
             pygame.display.update()
+            waitForPlayerToPressKey()
 
     def handleEvents(self, player, events, keys_down):
 
@@ -190,7 +196,7 @@ class GameSpace_multi:
         # Update position of player
         player.move(keys_down)
 
-    def addData(self, data):
+    def writeData(self, data):
 
         # Add updates from host to client gamespace
         self.teammate_state = pickle.loads(data)

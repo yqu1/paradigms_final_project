@@ -1,39 +1,24 @@
-# paradigms_final_project
+Final Project Description:
 
-sample project with twisted: https://github.com/bdevorem/tanks
-sample game: https://github.com/patrick333/typical-python-games
+Team Members: Marykate Williams, Yaoxian Qu
 
-Player:
-	-move function takes in key that user has pressed to move the player in different directions
-	-update function checks through list of enemies --> if enemy collision, remove enemy and decrease hit point;
-	also check fire attribute --> if true, generate bullet
-	-fire attribute is set to true when user left clicks and set to false when user releases
+Game Description:
 
-Enemy:
-	-update function continuously moves object downward with random speed
-	-speed attribute that is set in init() function
-	-hit point attribute which is decreased when hit by player bullet; once it reaches 0, remove enemy
-	-check through list of bullets to see if it collides with self; if it collides, remove bullet from list of bullets
-	-once enemy y-value exceeds that of the screen, remove enemy from the game
+This game is a scrolling shooter arcade game that can be controlled by either
+a single player or multiplayer. The player controls a plane which could shoot out 
+bullets and have a certain amount of hitpoints allotted. Enemies are randomly generated,
+the player's objective is to shoot as many enemies as possible before the hitpoint is
+exhausted. The game ends when the player dies. 
 
-Bullet:
-	-update its position on every tick (continuously moving upwards)
+Modes:
 
-Gampespace (in host and client):
+First, the player has the option to select single player mode or multiplayer mode. 
+For single player mode the player simply choose single player mode and the game starts. Multiplayer mode supports gameplay for two players, one player opens host.py and the other client.py.
+For multiplayer mode the host has to first select multiplayer option and then the client
+selects multiplayer option. The specific machine and port for multiplayer can be changed when necessary, which is explained in the comments of our code. The default is that both the client and the host runs on local machine. (If want to run client on some other machine, simply change the HOST variable in client.py to ash.campus.nd.edu or whichever the host machine is). 
 
-	-initialize game objects:
-		    list of enemies (only host generates enemies)
-		    list of bullets
-		    players 1 and 2
-		    add_enemy_rate
-		    enemy_count
+Controls:
 
-	-start up event loop:
-	       if event.type == KEYDOWN, then call player.move() function
-	       if event.type == MOUSEDOWN, then set player.fire = true
-	       if event.type == MOUSEUP, then set player.fire = false
+The player controls the movement of the plane by w (up), s (down), a (left), d (right). Plane can shoot out bullets when the left mouse button is pressed. 
 
-	       ** IN HOST **
-	       if enemy_count == add_enemy_rate, generate new enemy with random speed
-
-	-call update function for all sprite objects
+The hitpoint values for each player is displayed. And the score that the player has gained is also displayed. The player has a initial hp of 100. And each enemy can cause 20 points of hitpoint reduction to the player. 

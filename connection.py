@@ -34,7 +34,7 @@ class ServerConnection(Protocol):
 
 	# Send the data to the gamespace
 	def dataReceived(self, data):
-		self.gs.addData(data)
+		self.gs.writeData(data)
 
 	# Send the data through the connection
 	def send(self, data):
@@ -73,7 +73,7 @@ class ClientConnection(Protocol):
 
 	# When you get data, send it to the gamespace
 	def dataReceived(self, data):
-		self.gs.addData(data)
+		self.gs.writeData(data)
 
 	# Send data through the connection
 	def send(self, data):

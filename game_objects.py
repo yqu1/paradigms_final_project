@@ -89,15 +89,17 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.fire = False
         self.gs = gs
-        self.hp = 1
+        self.hp = 100
         self.score = 0
 
     def update(self):
+        if self.hp <= 0: 
+            return 
 
         # Check to see whether or not player has been hit by an enemy
         for enemy in self.gs.enemy_list:
             if pygame.sprite.collide_circle(self, enemy):
-                self.hp -= 100
+                self.hp -= 20
                 self.gs.enemy_list.remove(enemy)
 
         # Check to see whether or not player is firing bullets
@@ -106,6 +108,8 @@ class Player(pygame.sprite.Sprite):
             self.gs.bullet_list.add(bullet)
 
     def move(self, key):
+        if self.hp <= 0: 
+            return 
 
         # Move player based on key pressed
         if key[K_a]:

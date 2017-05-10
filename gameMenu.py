@@ -56,8 +56,6 @@ class GameMenu():
             # t_h: total height of text block
             t_h = len(items) * menu_item.height
             pos_x = (self.scr_width / 2) - (menu_item.width / 2)
-            # This line includes a bug fix by Ariel (Thanks!)
-            # Please check the comments section of pt. 2 for an explanation
             pos_y = (self.scr_height / 2) - (t_h / 2) + ((index * 2) + index * menu_item.height)
  
             menu_item.set_position(pos_x, pos_y)
@@ -150,17 +148,3 @@ class GameMenu():
  
             pygame.display.flip()
  
-if __name__ == "__main__":
-    def hello_world():
-        print "Hello World!"
- 
-    # Creating the screen
-    screen = pygame.display.set_mode((640, 480), 0, 32)
- 
-    menu_items = ('Start', 'Quit')
-    funcs = {'Start': hello_world,
-             'Quit': sys.exit}
- 
-    pygame.display.set_caption('Game Menu')
-    gm = GameMenu(screen, funcs.keys(), funcs)
-    gm.run()
