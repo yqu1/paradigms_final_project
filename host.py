@@ -15,16 +15,19 @@ import pickle
 
 from game_objects import *
 
+# Client & Host information
 CLIENT_PORT = 40051
 HOST = 'localhost'
 
-
-
+# Function to end game
 def end():
+
     pygame.quit()
     sys.exit()
 
+# Function to read keyboard input
 def waitForPlayerToPressKey():
+
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -35,14 +38,20 @@ def waitForPlayerToPressKey():
                 if event.key == K_RETURN:
                     return
 
+# Function to draw text on screen                
 def drawText(text, font, surface, x, y):
+
     textobj = font.render(text, 1, (250, 250, 255))
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
+# Multiplayer Gamespace
 class GameSpace_multi:
+
     def __init__(self):
+
+        # Initialize pygame display
         pygame.init()
         self.width = 1000
         self.height = 500
@@ -51,11 +60,15 @@ class GameSpace_multi:
         self.screen = pygame.display.set_mode(self.size)
         self.background = pygame.Surface(self.screen.get_size())
         self.running = True
+
+        # Listen for client connection
         self.cf = ServerConnFactory(self)   
         reactor.listenTCP(CLIENT_PORT, self.cf)
         reactor.run()
 
     def start(self):
+
+        # Initialize game objects
         self.player = Player(self)
         self.player.rect.x = 400
         self.player.rect.y = 400
@@ -63,30 +76,23 @@ class GameSpace_multi:
         self.teammate = Player(self)
         self.teammate.rect.x = 500
         self.teammate.rect.y = 400
+        
         self.bullet_list = pygame.sprite.Group()
+        self.bullet_count = 0
+        self.add_bullet_rate = 20
+
         self.curEnemy = {}
         self.enemy_list = pygame.sprite.Group()
         self.enemy_state_list = []
         self.add_enemy_rate = 6
         self.enemy_count = 0
-        self.bullet_count = 0
-        self.add_bullet_rate = 20
+        
         self.scoreFont=pygame.font.SysFont("arial,tahoma", 20, True, True)
-
-        self.screen2 = pygame.display.set_mode([self.width,self.height])
-        # pygame.display.set_caption('Raiden Simulation Game Engine')
-
-        # # game resources setup
         self.font = pygame.font.SysFont(None, 48)
-        #scoreFont=pygame.font.SysFont(["Arial","Tahoma","Times New Roman","Verdana"], 20, True, True)  #how the list should be formatted.
-        # self.clock = pygame.time.Clock()
-
-        # drawText('RAIDEN', font, screen, (self.width / 3), (self.height / 3))
-        # drawText('Press enter to start...', font, screen, (self.width / 3) - 80, (self.height / 3) + 50)
-        # pygame.display.update()
-        # waitForPlayerToPressKey()
 
     def tick(self):
+
+        # Update game state
         state = {}
         events = pygame.event.get()
         keys_down = pygame.key.get_pressed()
@@ -95,12 +101,21 @@ class GameSpace_multi:
         state['pos'] = (self.player.rect.x, self.player.rect.y)
         state['hp'] = self.player.hp
         state['score'] = self.player.score
+
+        # Update enemies when if new enemy has been added
         if self.enemy_count == self.add_enemy_rate:
             self.enemy_count = 0
             state['enemy'] = self.curEnemy
+
+        # Send state information to client
         self.sendState(state)
+
+        # Call event handler loop
         self.handleEvents(self.player, events, keys_down)
+        
         if self.running == True:
+
+            # Generate new enemies when appropriate
             self.enemy_count +=1
             if self.enemy_count == self.add_enemy_rate:
                 speed = random.randrange(1, 5)
@@ -114,22 +129,18 @@ class GameSpace_multi:
                 enemy_state['speed'] = speed
                 enemy_state['pos'] = (enemy.rect.x, enemy.rect.y)
                 self.curEnemy = enemy_state
-                #events = pygame.event.get()
-                #keys_down = pygame.key.get_pressed()
-                #state['events'] = self.packageEvents(events)
-                #state['keys_down'] = keys_down
-                #state['pos'] = (self.player.rect.x, self.player.rect.y)
-                #state['enemy'] = self.curEnemy
-                #self.sendState(state)
 
-
+            # Update game objects    
             self.player.update()
             self.teammate.update()
             self.enemy_list.update()
             self.bullet_list.update()
 
+            # End game if either player has been killed
             if self.player.hp <= 0 or self.teammate.hp <= 0:
                 self.running = False
+
+            # Update display screen
             self.screen.fill(self.black)
             self.enemy_list.draw(self.screen)
             self.bullet_list.draw(self.screen)
@@ -138,7 +149,10 @@ class GameSpace_multi:
             drawText('Score: %s' % (self.player.score), self.scoreFont, self.screen, 0, 0)
             drawText('HP: %s' % (self.player.hp), self.scoreFont, self.screen, 0, 460)
             pygame.display.flip()
+            
         else:
+
+            # Update display screen to indicate game is over
             drawText('Your Score: %s' % (self.player.score), self.scoreFont, self.screen, (self.width / 3) - 100, (self.height / 3) + 150)
             drawText('Teammate Score: %s' % (self.teammate.score), self.scoreFont, self.screen, (self.width / 3) + 100, (self.height / 3) + 150)
             drawText('GAME OVER', self.font, self.screen, (self.width / 3), (self.height / 3))
@@ -147,24 +161,22 @@ class GameSpace_multi:
 
 
     def handleEvents(self, player, events, keys_down):
+
+        # Handle player input
         for event in events:
             if event.type == QUIT:
-                sys.exit()
-                # if event.key == pygame.K_ESCAPE:
-                #     drawText('Paused', font, screen, (self.width / 3), (self.height / 3))
-                #     drawText('Press enter to play again or esc to quit...', font, screen, (self.width / 3) - 80, (self.height / 3) + 50)
-                #     pygame.display.update()
-                #     waitForPlayerToPressKey()
-
+                end()
             elif event.type == MOUSEBUTTONDOWN:
                 player.fire = True
             elif event.type == MOUSEBUTTONUP:
                 player.fire = False
 
-
+        # Update player position
         self.player.move(keys_down)
 
     def packageEvents(self, events):
+
+        # Package events to send to client
         event_list = []
         for event in events:
             ev = {}
@@ -185,22 +197,30 @@ class GameSpace_multi:
         return event_list
 
     def sendState(self, state):
+
+        # Send state information to client
         s = pickle.dumps(state)
         self.cf.conn.send(s)
 
     def handleRemoteEvents(self, player, events, keys_down):
+
+        # Handle events from client's player
         for event in events:
             if event['type'] == 'quit':
-                sys.exit()
+                end()
             elif event['type'] == 'mousedown':
                 player.fire = True
             elif event['type'] == 'mouseup':
                 player.fire = False
 
+        # Update position of player
         player.move(keys_down)
 
     def addData(self, data):
+
+        # Add updates from client to host gamespace
         self.teammate_state = pickle.loads(data)
+
         try:
             pos = self.teammate_state['pos']
             events = self.teammate_state['events']
@@ -215,9 +235,8 @@ class GameSpace_multi:
 
 
 
-
-
 if __name__ == '__main__':
+
     screen = pygame.display.set_mode((640, 480), 0, 32)
     menu_items = ('Quit', 'Single Player','Multi Player')
     funcs = {'Quit': sys.exit,
